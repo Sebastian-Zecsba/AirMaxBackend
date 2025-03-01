@@ -26,4 +26,31 @@ export class UploadImageService {
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
+
+  uploadFiles(files: Express.Multer.File[]): Promise<CloudinaryResponse[]> {
+    const uploadPromises = files.map((file) => {
+      return new Promise<CloudinaryResponse>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            transformation: [
+              {
+                width: 1000,
+                crop: 'limit',
+                quality: 'auto',
+                fetch_format: 'auto',
+              },
+            ],
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result!);
+          },
+        );
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      });
+    });
+    return Promise.all(uploadPromises);
+  }
 }
+
+

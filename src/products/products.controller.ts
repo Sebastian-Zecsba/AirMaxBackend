@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Put, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Put, UseInterceptors, UploadedFile, BadRequestException, UploadedFiles } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { GetProductsQueryDTO } from '../products/dto/get-product.dto';
 import { IdValidationPipe } from 'src/common/pipes/id-validation.pipe';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadImageService } from 'src/upload-image/upload-image.service';
 
 @Controller('products')
@@ -49,11 +49,11 @@ export class ProductsController {
   }
 
   @Post('upload-image')
-  @UseInterceptors(FileInterceptor('file'))
-  uploadImage(@UploadedFile() file: Express.Multer.File){
-    if(!file){
-      throw new BadRequestException('La imagen es obligatoria')
+  @UseInterceptors(FilesInterceptor('files', 3))
+  uploadImage(@UploadedFiles() files: Express.Multer.File[]){
+    if(!files || files.length === 0){
+      throw new BadRequestException('Debe a ver al menos una imagen')
     }
-    return this.uploadImageService.uploadFile(file)
+    return this.uploadImageService.uploadFiles(files)
   }
 }

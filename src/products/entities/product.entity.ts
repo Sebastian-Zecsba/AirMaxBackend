@@ -12,8 +12,8 @@ export class Product {
     @Column({type: 'text'})
     description: string
 
-    @Column({type: 'varchar', length: 120, nullable: true, default: 'default.png'})
-    image: string
+    @Column({type: 'jsonb', nullable: true, default: '[]'})
+    images: string[]
 
     @Column({type: 'float'})
     price: number

@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { ArrayMinSize, IsArray, IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateProductDto {
 
@@ -10,8 +10,11 @@ export class CreateProductDto {
     @IsString({message: 'Descripcion no valida'})
     description: string
 
-    @IsNotEmpty({message: 'La imagen del producto es obligatoria'})
-    image: string
+    @IsNotEmpty({ message: 'Al menos una imagen es obligatoria' })
+    @IsArray({ message: 'Las imágenes deben ser un arreglo' })
+    @IsString({ each: true, message: 'Cada imagen debe ser una cadena válida' })
+    @ArrayMinSize(1, { message: 'Debe haber al menos una imagen' })
+    images: string[]; // Cambiado a un arreglo de strings
 
     @IsNotEmpty({message: 'El precio del producto es Obligatorio'})
     @IsNumber({}, { message: 'Precio no valido'})
